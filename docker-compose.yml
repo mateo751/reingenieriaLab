@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.3
+        environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pos_parqueamiento
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+    ports: ["3306:3306"]
+    volumes: ["dbdata:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  api:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/pos_parqueamiento?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: app
+      SPRING_DATASOURCE_PASSWORD: app
+      SPRING_FLYWAY_CONNECT_RETRIES: "30"
+      SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "0"
+    ports: ["8080:8080"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports: ["5173:80"]
+    depends_on: [api]
+
+volumes:
+  dbdata:

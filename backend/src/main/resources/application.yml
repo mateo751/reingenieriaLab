@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/pos_parqueamiento?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:app}
+    password: ${SPRING_DATASOURCE_PASSWORD:app}
+    hikari:
+      initializationFailTimeout: 0
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+  flyway:
+    enabled: true
+    connect-retries: 30
+server:
+  port: ${SERVER_PORT:8080}
